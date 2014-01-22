@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:rim="http://www.blackberry.com/ns/widgets" id="cl.cordova.plugin.accessorywebview" version="0.1.1">
+   <name>CLAccessoryWebView</name>
+   <description>Cordova CLAccessoryWebView Plugin</description>
+   <license>Apache 2.0</license>
+   <keywords>cordova,share</keywords>
+   <repo> https://github.com/objectiveCarlo/CLAccessoryWebView.git </repo>
+  
+   <js-module src="www/CLAccessoryWebView.js" name="CLAccessoryWebView">
+      <clobbers target="CLAccessoryWebView" />
+   </js-module>
+
+   <!-- android -->
+   <platform name="android">
+      <config-file target="res/xml/config.xml" parent="/*">
+         <feature name="CLAccessoryWebView">
+            <param name="android-package" value="cl.cordova.plugin.accessorywebview.CLAccessoryWebView" />
+         </feature>
+      </config-file>
+    <source-file src="src/android/CLAccessoryWebView.java" target-dir="src/cl/cordova/plugin/accessorywebview" />
+   </platform>
+
+   <platform name="ios">
+      <config-file target="config.xml" parent="/*">
+         <feature name="CLAccessoryWebView">
+            <param name="ios-package" value="CLAccessoryWebView" />
+         </feature>
+      </config-file>
+     
+
+      <header-file src="src/ios/CLAccessoryWebView.h" />
+      <source-file src="src/ios/CLAccessoryWebView.m" />
+   
+   </platform>
+</plugin>
