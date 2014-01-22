@@ -19,15 +19,16 @@ var CLAccessoryWebViewClass = function () {
             }
             exec(function(){}, function(){}, kClassName, method, params);
     }
-    self.open = function(url, x, y)
+    self.open = function(url, x, y, height)
     {
-        self.execute([url, x, y], 'open');
+        self.execute([url, x, y, height], 'open');
     }
 
     self.close = function()
     {
         self.execute([], 'close');
     }
+   
 }
 
 
