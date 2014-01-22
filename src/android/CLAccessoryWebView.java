@@ -110,8 +110,10 @@ public class CLAccessoryWebView extends CordovaPlugin {
 	}
 
 	public class CLAccessoryWebViewClient extends WebViewClient {
-		@Override
-		public boolean shouldOverrideUrlLoading(WebView view, String url) {
+		
+		public boolean willLoad(String url){
+			if(originalUrl == null) return true;
+			
 			url = url.trim();
 			originalUrl = originalUrl.trim();
 			boolean contains = url.contains(originalUrl);
@@ -119,13 +121,27 @@ public class CLAccessoryWebView extends CordovaPlugin {
 			boolean equalsWithSlash = url == (originalUrl+'/');
 
 
-			boolean decision = (contains || equals || equalsWithSlash);
+			return (contains || equals || equalsWithSlash);
+			
+		}
+		
+		@Override
+		public void onLoadResource (WebView view, String url){
+			if(!this.willLoad(url)){ 
+				view.stopLoading();
+			}
+		}
+		@Override
+		public boolean shouldOverrideUrlLoading(WebView view, String url) {
+			
 
-			if(originalUrl!=null && url != null && decision){ 
+
+			if(this.willLoad(url)){ 
 				view.loadUrl(url);
 				return true;
 
 			} else {
+				view.stopLoading();
 				view.getContext().startActivity(
 						new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
 				return true; 
