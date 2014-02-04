@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -26,7 +27,7 @@ public class CLAccessoryWebView extends CordovaPlugin {
 	public WebView accessoryWebview;
 	public CLAccessoryWebViewClient webClient;
 	public String originalUrl = null;
-
+	public boolean wasFinished = false;
 
 	@SuppressLint("SetJavaScriptEnabled")
 	public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
@@ -69,7 +70,7 @@ public class CLAccessoryWebView extends CordovaPlugin {
 					}else{
 						CLAccessoryWebView.this.webView.addView(accessoryWebview,windowParams);
 					}
-
+					wasFinished = false;
 					accessoryWebview.clearCache(true);
 					accessoryWebview.clearHistory();
 					accessoryWebview.getSettings().setJavaScriptEnabled(true);
@@ -77,6 +78,7 @@ public class CLAccessoryWebView extends CordovaPlugin {
 					accessoryWebview.getSettings().setLoadWithOverviewMode(true);
 					accessoryWebview.getSettings().setUseWideViewPort(true);
 					accessoryWebview.loadUrl(originalUrl); 
+					
 
 				};
 			};
@@ -110,25 +112,25 @@ public class CLAccessoryWebView extends CordovaPlugin {
 	}
 
 	public class CLAccessoryWebViewClient extends WebViewClient {
-		
+
 		public boolean willLoad(String url){
-			if(originalUrl == null) return true;
-			
+			if(originalUrl == null|| !wasFinished) return true;
+
 			url = url.trim();
 			originalUrl = originalUrl.trim();
 			boolean contains = url.contains(originalUrl);
 			boolean equals = url == originalUrl;
 			boolean equalsWithSlash = url == (originalUrl+'/');
-
-
-			return (contains || equals || equalsWithSlash);
 			
+			Log.d("DEBUG", "url = "+url);
+			Log.d("DEBUG", "originalUrl = "+originalUrl);
+			return (contains || equals || equalsWithSlash);
+
 		}
-		
-		
+
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			
+
 
 
 			if(this.willLoad(url)){ 
@@ -139,12 +141,13 @@ public class CLAccessoryWebView extends CordovaPlugin {
 				view.stopLoading();
 				view.getContext().startActivity(
 						new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+				runCloseOnUIThread();
 				return true; 
 			}
 		}
 		public void onPageFinished(WebView view, String url) {
 
-
+			wasFinished = true;
 		}
 	}
 }
