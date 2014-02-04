@@ -125,12 +125,7 @@ public class CLAccessoryWebView extends CordovaPlugin {
 			
 		}
 		
-		@Override
-		public void onLoadResource (WebView view, String url){
-			if(!this.willLoad(url)){ 
-				view.stopLoading();
-			}
-		}
+		
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			
