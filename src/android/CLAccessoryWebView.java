@@ -6,9 +6,11 @@ import org.apache.cordova.CordovaPlugin;
 import org.json.JSONException;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -28,6 +30,7 @@ public class CLAccessoryWebView extends CordovaPlugin {
 	public CLAccessoryWebViewClient webClient;
 	public String originalUrl = null;
 	public boolean wasFinished = false;
+	public ProgressDialog pd;
 
 	@SuppressLint("SetJavaScriptEnabled")
 	public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
@@ -71,6 +74,11 @@ public class CLAccessoryWebView extends CordovaPlugin {
 						CLAccessoryWebView.this.webView.addView(accessoryWebview,windowParams);
 					}
 					wasFinished = false;
+					if (Build.VERSION.SDK_INT < 18) {
+						   webView.clearView();
+						} else {
+						   webView.loadUrl("about:blank");
+						}
 					accessoryWebview.clearCache(true);
 					accessoryWebview.clearHistory();
 					accessoryWebview.getSettings().setJavaScriptEnabled(true);
@@ -78,8 +86,9 @@ public class CLAccessoryWebView extends CordovaPlugin {
 					accessoryWebview.getSettings().setLoadWithOverviewMode(true);
 					accessoryWebview.getSettings().setUseWideViewPort(true);
 					accessoryWebview.loadUrl(originalUrl); 
+					showProgressDialog();
+	
 					
-
 				};
 			};
 			this.cordova.getActivity().runOnUiThread(runnable);
@@ -93,6 +102,20 @@ public class CLAccessoryWebView extends CordovaPlugin {
 
 		return false;
 	}
+	public void showProgressDialog(){
+		if(pd==null|| ! pd.isShowing())
+        {
+			pd = ProgressDialog.show(this.cordova.getActivity(), "", "Loading...",true);
+			pd.setCancelable(true); 
+        }
+    }
+	
+	public void dismissProgressDialog(){
+		if(pd!=null && pd.isShowing())
+        {
+			pd.dismiss();
+        }
+    }
 	public void runCloseOnUIThread(){
 		Runnable runnable = new Runnable() {
 			public void run() {
@@ -104,12 +127,18 @@ public class CLAccessoryWebView extends CordovaPlugin {
 		this.cordova.getActivity().runOnUiThread(runnable);
 	}
 	public void close(){
+		dismissProgressDialog();
 		if(accessoryWebview != null &&accessoryWebview.getParent() != null){
 			ViewGroup parentView = (ViewGroup) accessoryWebview.getParent(); 
 			((ViewGroup) parentView).removeView(accessoryWebview);
+			
+			
 		}
 
 	}
+	
+
+
 
 	public class CLAccessoryWebViewClient extends WebViewClient {
 
@@ -145,9 +174,17 @@ public class CLAccessoryWebView extends CordovaPlugin {
 				return true; 
 			}
 		}
+		@Override
 		public void onPageFinished(WebView view, String url) {
 
 			wasFinished = true;
+			dismissProgressDialog();
+		}
+	
+		@Override
+		public void onReceivedError (WebView view, int errorCode, String description, String failingUrl){
+
+			dismissProgressDialog();
 		}
 	}
 }
