@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -73,6 +74,11 @@ public class CLAccessoryWebView extends CordovaPlugin {
 						CLAccessoryWebView.this.webView.addView(accessoryWebview,windowParams);
 					}
 					wasFinished = false;
+					if (Build.VERSION.SDK_INT < 18) {
+						   webView.clearView();
+						} else {
+						   webView.loadUrl("about:blank");
+						}
 					accessoryWebview.clearCache(true);
 					accessoryWebview.clearHistory();
 					accessoryWebview.getSettings().setJavaScriptEnabled(true);
