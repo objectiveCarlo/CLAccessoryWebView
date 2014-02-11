@@ -32,13 +32,24 @@
                                                        timeoutInterval:60.0];
     
     originalUrlString = [[NSString alloc] initWithString:url];
-    [accesoryWebview loadRequest:request];
+    
     
     [self.webView addSubview:accesoryWebview];
+    if(activityView == nil){
+        activityView=[[UIActivityIndicatorView alloc]     initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        activityView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
+         [self.webView addSubview:activityView];
+    }
+    activityView.center=self.webView.center;
+    
+    [activityView startAnimating];
+    
+    [accesoryWebview loadRequest:request];
 }
 - (void)close:(CDVInvokedUrlCommand*)command{
     
     if(accesoryWebview !=nil) [accesoryWebview removeFromSuperview];
+    if(activityView == nil) [activityView stopAnimating];
 }
 
 #pragma mark - UIWebViewDelegate methods
@@ -50,21 +61,12 @@
         return NO;
     }
     
-    NSURL* requestedURL = [inRequest URL];
-    
-    if(requestedURL != nil){
-        NSString* requestedURLString = [requestedURL absoluteString];
-        BOOL isEqual = [requestedURLString isEqualToString:originalUrlString];
-        BOOL containsOriginal = [requestedURLString rangeOfString:originalUrlString].location != NSNotFound;
-        BOOL containsRequested = [originalUrlString rangeOfString:requestedURLString].location != NSNotFound;
-        BOOL decision = isEqual || containsOriginal || containsRequested;
-        if(!decision){
-            [[UIApplication sharedApplication] openURL:requestedURL];
-            return NO;
-        }
-    }
 
     
     return YES;
+}
+
+- (void) webViewDidFinishLoad:(UIWebView *)webView{
+      if(activityView == nil && activityView.isAnimating) [activityView stopAnimating];
 }
 @end
