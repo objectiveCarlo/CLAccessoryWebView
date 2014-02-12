@@ -17,7 +17,14 @@
    float height    = [[command argumentAtIndex:3] floatValue];
     CGRect frame = self.webView.frame;
     frame.origin = CGPointMake(xPosition, yPosition);
-    if(height > 0) frame.size.height = height;
+    
+    float minusHeight = frame.size.height - yPosition;
+    
+    if(height > minusHeight){
+        frame.size.height = minusHeight;
+    }else{
+        frame.size.height = height;
+    }
     if(accesoryWebview != nil) [accesoryWebview removeFromSuperview];
     
     accesoryWebview = [[UIWebView alloc] initWithFrame:frame];
