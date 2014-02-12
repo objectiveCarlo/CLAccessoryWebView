@@ -47,6 +47,8 @@
         activityView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
          [self.webView addSubview:activityView];
     }
+    
+    [self.webView bringSubviewToFront:activityView];
     activityView.center=self.webView.center;
     
     [activityView startAnimating];
