@@ -67,6 +67,6 @@
 }
 
 - (void) webViewDidFinishLoad:(UIWebView *)webView{
-      if(activityView == nil && activityView.isAnimating) [activityView stopAnimating];
+      if(activityView != nil && activityView.isAnimating) [activityView stopAnimating];
 }
 @end
