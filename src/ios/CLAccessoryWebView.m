@@ -72,7 +72,9 @@
     
     return YES;
 }
-
+- (void) webViewDidStartLoad:(UIWebView *)webView{
+    if(activityView != nil && !activityView.isAnimating) [activityView startAnimating];
+}
 - (void) webViewDidFinishLoad:(UIWebView *)webView{
       if(activityView != nil && activityView.isAnimating) [activityView stopAnimating];
 }
